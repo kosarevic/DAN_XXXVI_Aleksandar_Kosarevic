@@ -26,8 +26,11 @@ namespace Zadatak_1
             t2.Join();
 
             Thread t3 = new Thread(UnequalNumbers);
+            Thread t4 = new Thread(DisplayUnequalNumbers);
             t3.Start();
+            t4.Start();
             t3.Join();
+            t4.Join();
 
             Console.ReadLine();
         }
@@ -90,12 +93,37 @@ namespace Zadatak_1
                 count++;
             }
 
-            using (StreamWriter sw = new StreamWriter("..//..//Files/UnequalNumbers.txt"))
+            lock (TheLock)
             {
-                foreach (int i in unequalNumbers)
+                using (StreamWriter sw = new StreamWriter("..//..//Files/UnequalNumbers.txt"))
                 {
-                    sw.WriteLine(i);
+                    foreach (int i in unequalNumbers)
+                    {
+                        sw.WriteLine(i);
+                    }
                 }
+
+                Monitor.Pulse(TheLock);
+            }
+        }
+
+        public static void DisplayUnequalNumbers()
+        {
+            lock (TheLock)
+            {
+                while (numbers.Count() != 10000)
+                {
+                    Monitor.Wait(TheLock);
+                }
+
+                string line = "";
+                using (StreamReader sr = new StreamReader("..//..//Files/UnequalNumbers.txt"))
+                {
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        Console.WriteLine(line);
+                    }
+                } 
             }
         }
     }
