@@ -11,6 +11,7 @@ namespace Zadatak_1
     {
         public static int[,] matrix;
         public static int[] numbers = new int[10000];
+        public static readonly Random r = new Random();
         public static readonly object TheLock = new object();
 
         static void Main(string[] args)
@@ -21,11 +22,9 @@ namespace Zadatak_1
             t2.Start();
             t1.Join();
             t2.Join();
+            
 
-            foreach (var item in matrix)
-            {
-                Console.WriteLine(item);
-            }
+
             Console.ReadLine();
         }
 
@@ -40,23 +39,22 @@ namespace Zadatak_1
                     Monitor.Wait(TheLock);
                 }
 
+                int count = 0;
+
                 for (int i = 0; i < matrix.GetLength(0); i++)
                 {
                     for (int j = 0; j < matrix.GetLength(1); j++)
                     {
-                        foreach (int k in numbers)
-                        {
-                            matrix[i, j] = k;
-                        }
+                        matrix[i, j] = numbers[count];
+                        count++;
                     }
                 } 
             }
+
         }
 
         public static void GenerateNumbers()
         {
-            Random r = new Random();
-
             lock (TheLock)
             {
                 for (int i = 0; i < 10000; i++)
